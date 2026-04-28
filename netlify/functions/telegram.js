@@ -60,13 +60,22 @@ exports.handler = async function (event) {
     return text("Telegram bot webhook is ready.");
   }
 
+  const secretToken = process.env.TELEGRAM_WEBHOOK_SECRET;
+  if (secretToken && event.headers["x-telegram-bot-api-secret-token"] !== secretToken) {
+    return json({ ok: false, error: "Forbidden" }, 403);
+  }
+
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) {
     return json({ ok: false, error: "TELEGRAM_BOT_TOKEN is missing" }, 500);
   }
 
-  const update = JSON.parse(event.body || "{}");
-  await handleUpdate(update, token);
+  try {
+    const update = JSON.parse(event.body || "{}");
+    await handleUpdate(update, token);
+  } catch (error) {
+    console.error("Webhook handling failed", error);
+  }
 
   return json({ ok: true });
 };
