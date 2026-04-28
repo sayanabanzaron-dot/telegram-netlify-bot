@@ -1,57 +1,122 @@
-const BUSINESS_NAME = "Рабочий бот";
-const SITE_URL = "https://example.com/";
-const PORTFOLIO_URL = "https://github.com/";
-const CONTACT_URL = "https://t.me/";
+const BUSINESS_NAME = "Banzaron Neuro Bot";
+const SITE_URL = "https://banzaronneuro.com/";
+const INSTAGRAM_URL = "https://instagram.com/banzaron_neuro";
+const CONTACT_URL = "https://t.me/Listmebiusa";
+const BOOKING_URL = "https://banzaronneuro.com/";
 const HELP_URL = "https://core.telegram.org/bots";
 
 const SERVICES = [
   {
-    title: "Консультация",
-    description: "Разберем задачу, подберем формат работы и следующий шаг.",
-    price: "от 0 руб.",
+    title: "Нейропсихологическая диагностика",
+    description:
+      "Онлайн или офлайн. Полный разбор функционального профиля мозга ребенка: внимание, память, моторика, эмоциональная регуляция, обучаемость. Результат: письменный нейропрофиль, устный разбор и план действий. 60-90 минут.",
+    price: "по записи",
   },
   {
-    title: "Разработка Telegram-бота",
-    description: "Меню, заявки, тесты, ссылки, уведомления и запуск.",
-    price: "по задаче",
+    title: "Индивидуальная программа нейрокоррекции",
+    description:
+      "Персональные домашние протоколы и нейроупражнения на основе диагностики, плюс регулярное сопровождение родителей. Первые изменения обычно заметны через 2-4 недели при системной практике.",
+    price: "после диагностики",
   },
   {
-    title: "Автоматизация",
-    description: "Свяжем Telegram с таблицами, CRM, формами или внутренними процессами.",
-    price: "по задаче",
+    title: "Консультация для родителей",
+    description:
+      "Онлайн-разбор конкретной ситуации: поведение, обучение, эмоции, гаджеты, переходные периоды. Вы уходите с пониманием причин и конкретным планом, а не с общими советами.",
+    price: "по записи",
   },
 ];
 
 const FAQ = [
   [
-    "Как оставить заявку?",
-    "Отправьте команду /request и текст заявки одним сообщением. Например: /request Анна, @anna, нужен бот для записи клиентов.",
+    "Это медицинская услуга?",
+    "Нет. Banzaron Neuro работает в области нейропсихологии и нейрофизиологии развития. Это прикладное, не медицинское направление. Мы не ставим диагнозов, не назначаем лечения и не заменяем врача. Наша работа - развитие функций мозга и поведенческих стратегий на основе научных данных. При наличии медицинских показаний мы рекомендуем обратиться к профильному специалисту.",
   ],
   [
-    "Сколько занимает запуск?",
-    "Простой бот можно запустить за один день. Сложные сценарии зависят от интеграций.",
+    "С какого возраста вы работаете?",
+    "Оптимально с 4 лет: в этом возрасте уже можно объективно оценить внимание, моторику, эмоциональную регуляцию и обучаемость. До 4 лет рекомендуем консультацию для родителей по развитию, режиму и среде.",
   ],
   [
-    "Можно ли поменять тексты?",
-    "Да. Все тексты лежат в netlify/functions/telegram.js и легко редактируются.",
+    "Онлайн-формат настолько же эффективен?",
+    "Да. Диагностика и рекомендации адаптированы для дистанционного формата с участием родителя. Большинство семей из нашей практики работают онлайн без потери качества результата.",
+  ],
+  [
+    "Сколько длится диагностика?",
+    "Сессия длится 60-90 минут. После вы получаете письменный нейропрофиль и практические рекомендации. Устный разбор с родителем включен в стоимость.",
+  ],
+  [
+    "Когда виден результат?",
+    "При системной практике первые изменения заметны в течение 2-4 недель. Это не магия, а нейропластичность: мозг меняется через повторение. Мы сопровождаем процесс и корректируем программу по мере прогресса.",
+  ],
+  [
+    "Вы работаете с детьми с диагнозами: СДВГ, РАС, задержки?",
+    "Да, мы работаем с детьми с разным функциональным профилем. Наша работа развивающая, не лечебная. При наличии медицинского диагноза мы действуем в координации с лечащим врачом, а не вместо него.",
   ],
 ];
 
 const QUIZ_QUESTIONS = [
   {
-    question: "Что нужно боту для запуска?",
-    options: ["Токен", "Пароль от аккаунта", "Номер карты"],
-    answer: "Токен",
+    question: "Ребенку сложно удерживать внимание на задании дольше 5-10 минут?",
+    options: [
+      { text: "Да, часто", points: 1 },
+      { text: "Иногда", points: 0 },
+      { text: "Нет", points: 0 },
+    ],
   },
   {
-    question: "Где создают Telegram-ботов?",
-    options: ["BotFather", "Settings", "Saved Messages"],
-    answer: "BotFather",
+    question: "Ребенок быстро устает от учебных задач, чтения или письма?",
+    options: [
+      { text: "Да, заметно", points: 1 },
+      { text: "Иногда", points: 0 },
+      { text: "Нет", points: 0 },
+    ],
   },
   {
-    question: "Какая команда показывает полезные ссылки?",
-    options: ["/links", "/sleep", "/delete"],
-    answer: "/links",
+    question: "Есть резкие эмоциональные реакции: слезы, вспышки, сильное раздражение?",
+    options: [
+      { text: "Да, часто", points: 1 },
+      { text: "Иногда", points: 0 },
+      { text: "Редко", points: 0 },
+    ],
+  },
+  {
+    question: "Сложно переключаться между делами или спокойно завершать игру/мультики?",
+    options: [
+      { text: "Да", points: 1 },
+      { text: "Иногда", points: 0 },
+      { text: "Нет", points: 0 },
+    ],
+  },
+  {
+    question: "Есть неловкость в движениях, почерке, координации или мелкой моторике?",
+    options: [
+      { text: "Да", points: 1 },
+      { text: "Немного", points: 0 },
+      { text: "Нет", points: 0 },
+    ],
+  },
+  {
+    question: "Ребенку сложно запоминать инструкции из 2-3 шагов?",
+    options: [
+      { text: "Да", points: 1 },
+      { text: "Иногда", points: 0 },
+      { text: "Нет", points: 0 },
+    ],
+  },
+  {
+    question: "Обучение дается тяжелее, чем вы ожидали по возрасту ребенка?",
+    options: [
+      { text: "Да", points: 1 },
+      { text: "В отдельных темах", points: 0 },
+      { text: "Нет", points: 0 },
+    ],
+  },
+  {
+    question: "Есть сенсорные особенности: сильная реакция на звуки, одежду, еду, прикосновения?",
+    options: [
+      { text: "Да", points: 1 },
+      { text: "Иногда", points: 0 },
+      { text: "Нет", points: 0 },
+    ],
   },
 ];
 
@@ -109,7 +174,7 @@ async function handleMessage(token, chatId, userId, textValue, username) {
     await sendMessage(
       token,
       chatId,
-      `Привет! Это ${BUSINESS_NAME}.\n\nЗдесь можно посмотреть услуги, пройти короткий тест, открыть полезные ссылки или оставить заявку.\n\nВыберите действие:`,
+      startText(),
       mainMenu(),
     );
   } else if (normalized === "/help") {
@@ -128,7 +193,7 @@ async function handleMessage(token, chatId, userId, textValue, username) {
     await sendMessage(
       token,
       chatId,
-      `Вы написали: ${textValue}\n\nКоманды: /start, /services, /faq, /links, /test, /request`,
+      `Я вас услышал.\n\nЧтобы я помог точнее, выберите раздел в меню или отправьте заявку командой /request.`,
       mainMenu(),
     );
   } else {
@@ -149,7 +214,7 @@ async function handleCallback(token, chatId, data) {
     await sendMessage(
       token,
       chatId,
-      "Чтобы оставить заявку, отправьте одним сообщением:\n\n/request Имя, контакт, что нужно сделать\n\nНапример: /request Анна, @anna, нужен бот для записи клиентов.",
+      requestInstructionText(),
       mainMenu(),
     );
   } else if (data === "quiz_start") {
@@ -166,7 +231,7 @@ async function handleRequestCommand(token, chatId, userId, username, requestText
     await sendMessage(
       token,
       chatId,
-      "Отправьте заявку так:\n\n/request Имя, контакт, что нужно сделать\n\nНапример: /request Анна, @anna, нужен бот для записи клиентов.",
+      requestInstructionText(),
       mainMenu(),
     );
     return;
@@ -174,7 +239,7 @@ async function handleRequestCommand(token, chatId, userId, username, requestText
 
   const adminChatId = process.env.ADMIN_CHAT_ID;
   const usernameLine = username ? `@${username}` : "username не указан";
-  const adminText = `Новая заявка из Telegram-бота\n\nUser ID: ${userId}\nTelegram: ${usernameLine}\nСообщение: ${requestText}`;
+  const adminText = `Новая заявка в ${BUSINESS_NAME}\n\nUser ID: ${userId}\nTelegram: ${usernameLine}\nСообщение: ${requestText}`;
 
   if (adminChatId) {
     await sendMessage(token, Number(adminChatId), adminText);
@@ -183,7 +248,7 @@ async function handleRequestCommand(token, chatId, userId, username, requestText
   await sendMessage(
     token,
     chatId,
-    "Спасибо! Заявка принята. Мы свяжемся с вами в ближайшее время.",
+    "Спасибо. Заявка принята.\n\nМы свяжемся с вами и подскажем, какой формат лучше подойдет: диагностика, консультация или программа нейрокоррекции.",
     mainMenu(),
   );
 }
@@ -193,32 +258,29 @@ async function sendQuizQuestion(token, chatId, index, score) {
   await sendMessage(
     token,
     chatId,
-    `Вопрос ${index + 1}/${QUIZ_QUESTIONS.length}\n${question.question}`,
+    `Нейропрофиль ребенка за 3 минуты\n\nВопрос ${index + 1}/${QUIZ_QUESTIONS.length}\n${question.question}`,
     quizKeyboard(question.options, index, score),
   );
 }
 
 async function checkQuizAnswer(token, chatId, data) {
-  const [, indexRaw, scoreRaw, answer] = data.split(":");
+  const [, indexRaw, scoreRaw, pointsRaw] = data.split(":");
   const index = Number(indexRaw);
   const score = Number(scoreRaw);
-  const question = QUIZ_QUESTIONS[index];
-  const nextScore = answer === question.answer ? score + 1 : score;
-  const resultLine =
-    answer === question.answer ? "Верно." : `Неверно. Правильный ответ: ${question.answer}.`;
+  const points = Number(pointsRaw);
+  const nextScore = score + points;
   const nextIndex = index + 1;
 
   if (nextIndex >= QUIZ_QUESTIONS.length) {
     await sendMessage(
       token,
       chatId,
-      `${resultLine}\n\nТест завершен: ${nextScore}/${QUIZ_QUESTIONS.length}.`,
+      quizResultText(nextScore),
       mainMenu(),
     );
     return;
   }
 
-  await sendMessage(token, chatId, resultLine);
   await sendQuizQuestion(token, chatId, nextIndex, nextScore);
 }
 
@@ -234,7 +296,7 @@ function mainMenu() {
         { text: "Ссылки", callback_data: "links" },
       ],
       [
-        { text: "Пройти тест", callback_data: "quiz_start" },
+        { text: "Нейропрофиль 3 мин", callback_data: "quiz_start" },
         { text: "Помощь", callback_data: "help" },
       ],
     ],
@@ -245,8 +307,9 @@ function linksKeyboard() {
   return {
     inline_keyboard: [
       [{ text: "Сайт", url: SITE_URL }],
-      [{ text: "Портфолио", url: PORTFOLIO_URL }],
+      [{ text: "Instagram", url: INSTAGRAM_URL }],
       [{ text: "Написать в Telegram", url: CONTACT_URL }],
+      [{ text: "Записаться на консультацию", url: BOOKING_URL }],
       [{ text: "Документация Bot API", url: HELP_URL }],
     ],
   };
@@ -255,9 +318,24 @@ function linksKeyboard() {
 function quizKeyboard(options, index, score) {
   return {
     inline_keyboard: options.map((option) => [
-      { text: option, callback_data: `quiz:${index}:${score}:${option}` },
+      { text: option.text, callback_data: `quiz:${index}:${score}:${option.points}` },
     ]),
   };
+}
+
+function startText() {
+  return [
+    "Вы в пространстве Banzaron Neuro - прикладной нейропсихологии для семьи.",
+    "",
+    "Здесь вы получите научно обоснованное понимание того, как развивается мозг вашего ребенка, и конкретные инструменты для работы с этим каждый день.",
+    "",
+    "Выберите, с чем пришли:",
+    "- Диагностика развития",
+    "- Консультация для родителей",
+    "- Развитие и обучение",
+    "",
+    "Или начните с быстрого нейропрофиля: 3 минуты, конкретный результат.",
+  ].join("\n");
 }
 
 function servicesText() {
@@ -283,11 +361,66 @@ function helpText() {
     "/services - услуги",
     "/faq - ответы на вопросы",
     "/links - показать ссылки",
-    "/test - пройти встроенный тест",
+    "/test - пройти нейропрофиль за 3 минуты",
     "/request - оставить заявку",
     "/help - помощь",
     "",
-    "Для заявки отправьте: /request Имя, контакт, что нужно сделать",
+    "Для заявки отправьте: /request и данные по шаблону.",
+  ].join("\n");
+}
+
+function requestInstructionText() {
+  return [
+    "Чтобы оставить заявку, отправьте одним сообщением после команды /request:",
+    "",
+    "1. Имя родителя",
+    "2. Имя и возраст ребенка",
+    "3. Основной запрос: что беспокоит и как давно",
+    "4. Что уже пробовали: специалисты, методы, занятия",
+    "5. Формат: онлайн, офлайн или не принципиально",
+    "6. Удобное время для связи",
+    "7. Контакт: WhatsApp или Telegram",
+    "",
+    "Пример:",
+    "/request Анна. Ребенок Марк, 7 лет. Сложно удерживать внимание, быстро устает от письма, вспышки раздражения около года. Были у логопеда, делали занятия на моторику. Формат онлайн. Связь в будни после 18:00. Telegram @username.",
+  ].join("\n");
+}
+
+function quizResultText(score) {
+  if (score <= 2) {
+    return [
+      `Ваш результат: ${score} флаг(а) из ${QUIZ_QUESTIONS.length}.`,
+      "",
+      "Рекомендация: консультация для родителей.",
+      "",
+      "Сейчас важно спокойно разобрать ситуацию: что является возрастной нормой, что связано со средой и режимом, а где ребенку уже нужна поддержка. Консультация поможет понять причины и получить конкретный план действий.",
+      "",
+      "Чтобы записаться, нажмите «Оставить заявку» или отправьте /request.",
+    ].join("\n");
+  }
+
+  if (score <= 4) {
+    return [
+      `Ваш результат: ${score} флага из ${QUIZ_QUESTIONS.length}.`,
+      "",
+      "Рекомендация: нейропсихологическая диагностика.",
+      "",
+      "Есть несколько устойчивых сигналов по вниманию, регуляции, моторике или обучению. Диагностика поможет увидеть функциональный профиль ребенка и понять, какие упражнения и изменения в быту дадут результат.",
+      "",
+      "Чтобы записаться, нажмите «Оставить заявку» или отправьте /request.",
+    ].join("\n");
+  }
+
+  return [
+    `Ваш результат: ${score} флагов из ${QUIZ_QUESTIONS.length}.`,
+    "",
+    "Рекомендация: диагностика в приоритетном порядке.",
+    "",
+    "Сигналов достаточно много, и лучше не гадать по отдельным симптомам. Нужен целостный разбор: внимание, эмоциональная регуляция, моторика, память, обучаемость и сенсорные особенности.",
+    "",
+    "Это не диагноз и не повод пугаться. Это повод понять, как именно помочь ребенку системно.",
+    "",
+    "Чтобы записаться, нажмите «Оставить заявку» или отправьте /request.",
   ].join("\n");
 }
 
