@@ -4,6 +4,7 @@ const INSTAGRAM_URL = "https://instagram.com/banzaron_neuro";
 const CONTACT_URL = "https://t.me/Listmebiusa";
 const BOOKING_URL = "https://banzaronneuro.com/";
 const HELP_URL = "https://core.telegram.org/bots";
+const REQUEST_FORM_MARKER = "Форма заявки Banzaron Neuro";
 
 const SERVICES = [
   {
@@ -152,7 +153,8 @@ async function handleUpdate(update, token) {
     const userId = message.from?.id ?? chatId;
     const username = message.from?.username ?? "";
     const textValue = (message.text ?? "").trim();
-    await handleMessage(token, chatId, userId, textValue, username);
+    const replyToText = message.reply_to_message?.text ?? "";
+    await handleMessage(token, chatId, userId, textValue, username, replyToText);
     return;
   }
 
@@ -165,12 +167,14 @@ async function handleUpdate(update, token) {
   }
 }
 
-async function handleMessage(token, chatId, userId, textValue, username) {
+async function handleMessage(token, chatId, userId, textValue, username, replyToText = "") {
   const [command, ...rest] = textValue.split(/\s+/);
   const normalized = (command ?? "").toLowerCase();
   const requestText = rest.join(" ").trim();
 
-  if (normalized === "/start") {
+  if (isRequestFormReply(replyToText) && textValue) {
+    await handleRequestCommand(token, chatId, userId, username, textValue);
+  } else if (normalized === "/start") {
     await sendMessage(
       token,
       chatId,
@@ -189,6 +193,13 @@ async function handleMessage(token, chatId, userId, textValue, username) {
     await sendQuizQuestion(token, chatId, 0, 0);
   } else if (normalized === "/request") {
     await handleRequestCommand(token, chatId, userId, username, requestText);
+  } else if (normalized === "/myid") {
+    await sendMessage(
+      token,
+      chatId,
+      `Ваш chat_id для ADMIN_CHAT_ID:\n${chatId}\n\nЕсли заявки должны приходить вам сюда, добавьте это число в Netlify как переменную ADMIN_CHAT_ID.`,
+      mainMenu(),
+    );
   } else if (textValue) {
     await sendMessage(
       token,
@@ -211,12 +222,7 @@ async function handleCallback(token, chatId, data) {
   } else if (data === "links") {
     await sendMessage(token, chatId, "Полезные ссылки:", linksKeyboard());
   } else if (data === "request") {
-    await sendMessage(
-      token,
-      chatId,
-      requestInstructionText(),
-      mainMenu(),
-    );
+    await sendRequestForm(token, chatId);
   } else if (data === "quiz_start") {
     await sendQuizQuestion(token, chatId, 0, 0);
   } else if (data.startsWith("quiz:")) {
@@ -228,21 +234,35 @@ async function handleCallback(token, chatId, data) {
 
 async function handleRequestCommand(token, chatId, userId, username, requestText) {
   if (!requestText) {
-    await sendMessage(
-      token,
-      chatId,
-      requestInstructionText(),
-      mainMenu(),
-    );
+    await sendRequestForm(token, chatId);
     return;
   }
 
-  const adminChatId = process.env.ADMIN_CHAT_ID;
+  const adminChatId = process.env.ADMIN_CHAT_ID?.trim();
   const usernameLine = username ? `@${username}` : "username не указан";
-  const adminText = `Новая заявка в ${BUSINESS_NAME}\n\nUser ID: ${userId}\nTelegram: ${usernameLine}\nСообщение: ${requestText}`;
+  const profileLine = username ? `https://t.me/${username}` : "нет публичного username";
+  const adminText = [
+    `Новая заявка в ${BUSINESS_NAME}`,
+    "",
+    `User ID: ${userId}`,
+    `Chat ID: ${chatId}`,
+    `Telegram: ${usernameLine}`,
+    `Профиль: ${profileLine}`,
+    "",
+    "Заявка:",
+    requestText,
+  ].join("\n");
 
-  if (adminChatId) {
-    await sendMessage(token, Number(adminChatId), adminText);
+  const delivered = await notifyAdmin(token, adminChatId, adminText);
+
+  if (!delivered) {
+    await sendMessage(
+      token,
+      chatId,
+      "Заявка заполнена, но уведомление администратору сейчас не настроено.\n\nПожалуйста, напишите напрямую: @Listmebiusa\n\nАдминистратору нужно добавить ADMIN_CHAT_ID в Netlify.",
+      mainMenu(),
+    );
+    return;
   }
 
   await sendMessage(
@@ -250,6 +270,30 @@ async function handleRequestCommand(token, chatId, userId, username, requestText
     chatId,
     "Спасибо. Заявка принята.\n\nМы свяжемся с вами и подскажем, какой формат лучше подойдет: диагностика, консультация или программа нейрокоррекции.",
     mainMenu(),
+  );
+}
+
+async function notifyAdmin(token, adminChatId, adminText) {
+  if (!adminChatId) return false;
+
+  try {
+    await sendMessage(token, adminChatId, adminText);
+    return true;
+  } catch (error) {
+    console.error("Admin notification failed", error);
+    return false;
+  }
+}
+
+async function sendRequestForm(token, chatId) {
+  await sendMessage(
+    token,
+    chatId,
+    requestInstructionText(),
+    {
+      force_reply: true,
+      input_field_placeholder: "Заполните заявку одним сообщением",
+    },
   );
 }
 
@@ -363,6 +407,7 @@ function helpText() {
     "/links - показать ссылки",
     "/test - пройти нейропрофиль за 3 минуты",
     "/request - оставить заявку",
+    "/myid - узнать chat_id для получения заявок",
     "/help - помощь",
     "",
     "Для заявки отправьте: /request и данные по шаблону.",
@@ -371,7 +416,9 @@ function helpText() {
 
 function requestInstructionText() {
   return [
-    "Чтобы оставить заявку, отправьте одним сообщением после команды /request:",
+    REQUEST_FORM_MARKER,
+    "",
+    "Ответьте на это сообщение одним текстом по шаблону:",
     "",
     "1. Имя родителя",
     "2. Имя и возраст ребенка",
@@ -381,9 +428,13 @@ function requestInstructionText() {
     "6. Удобное время для связи",
     "7. Контакт: WhatsApp или Telegram",
     "",
-    "Пример:",
-    "/request Анна. Ребенок Марк, 7 лет. Сложно удерживать внимание, быстро устает от письма, вспышки раздражения около года. Были у логопеда, делали занятия на моторику. Формат онлайн. Связь в будни после 18:00. Telegram @username.",
+    "Пример ответа:",
+    "Анна. Ребенок Марк, 7 лет. Сложно удерживать внимание, быстро устает от письма, вспышки раздражения около года. Были у логопеда, делали занятия на моторику. Формат онлайн. Связь в будни после 18:00. Telegram @username.",
   ].join("\n");
+}
+
+function isRequestFormReply(replyToText) {
+  return replyToText.includes(REQUEST_FORM_MARKER);
 }
 
 function quizResultText(score) {
